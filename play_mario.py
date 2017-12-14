@@ -37,20 +37,15 @@ def ob_process(frame):
     frame=frame.unsqueeze(0).type(Tensor)
     return frame
 
-def plot_graph(episode_reward):
-    reward_list = torch.Tensor(episode_reward)
+def plot_graph(mean_reward_list):
+
     plt.figure(1)
     plt.clf()
     plt.title('Episode Total Reward')
     plt.xlabel('Episode')
     plt.ylabel('Total Reward')
     # 最近100个episode的total reward的平均值 #
-    if len(reward_list)>=100:
-        means=reward_list.unfold(0,100,1).mean(1).view(-1)
-        means=torch.cat((torch.zeros(99),means))
-        plt.plot(means.numpy())
-    else:
-        plt.plot(reward_list.numpy())
+    plt.plot(mean_reward_list)
     plt.pause(0.001)  # pause a bit so that plots are updated
     if is_ipython:
         display.clear_output(wait=True)
@@ -69,6 +64,8 @@ def learn(env,
         LEARNING_RATE,
         GAMMA,
         NET_COPY_STEP,
+        OBSERVE,
+        TRAIN_FREQ,
         PATH
         ):
     ### initialization ###
@@ -95,6 +92,7 @@ def learn(env,
     judge_distance=0
     episode_total_reward = 0
     epi_total_reward_list=[]
+    mean_reward_list=[]
     # counters #
     time_step=0
     update_times=0
@@ -141,11 +139,13 @@ def learn(env,
             history_distance = 200
             # plot graph #
             epi_total_reward_list.append(episode_total_reward)
-            plot_graph(epi_total_reward_list)
+            mean100=np.mean(epi_total_reward_list[-101:-1])
+            mean_reward_list.append(mean100)
+            plot_graph(mean_reward_list)
             print('episode %d total reward=%.2f'%(episode_num,episode_total_reward))
             episode_total_reward = 0
         ### do one step update ###
-        if len(buffer) == buffer.capacity and time_step % 4 == 0:
+        if time_step>=OBSERVE and time_step % TRAIN_FREQ == 0:
             batch_transition = buffer.sample(BATCH_SIZE)
             '''{Transition}
             0:{tuple} of {Tensor}-shape-torch.Size([4,84,84])
@@ -173,18 +173,20 @@ if __name__=='__main__':
 
     plt.ion()
     learn(env=env.Env(),
-        MAX_EPISODE=100,
+        MAX_EPISODE=2000000,
         EPS_START=0.9,
         EPS_END=0.05,
         EPS_DECAY=200,
         ACTION_NUM=6,
-        REPLAY_MEMORY_CAPACITY=100,
-        BATCH_SIZE=10,
+        REPLAY_MEMORY_CAPACITY=10000,
+        BATCH_SIZE=32,
         LOSS_FUNCTION=nn.SmoothL1Loss,
-        OPTIM_METHOD=optim.RMSprop,
-        LEARNING_RATE=0.00025,
+        OPTIM_METHOD=optim.Adam,
+        LEARNING_RATE=1e-4,
         GAMMA=0.99,
-        NET_COPY_STEP=10,
+        NET_COPY_STEP=1000,
+        OBSERVE=10000,
+        TRAIN_FREQ=4,
         PATH='net_param.pt'
         )
 
