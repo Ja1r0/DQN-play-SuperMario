@@ -85,7 +85,7 @@ def learn(env,
     if torch.cuda.is_available():
        value_net.cuda()
        target_net.cuda()
-    if os.listdir(PATH):
+    if os.path.isfile(PATH):
         value_net.load_state_dict(torch.load(PATH))
     buffer=replay_memory(REPLAY_MEMORY_CAPACITY)
     env.reset()
@@ -185,7 +185,7 @@ if __name__=='__main__':
         LEARNING_RATE=0.00025,
         GAMMA=0.99,
         NET_COPY_STEP=10,
-        PATH='./model_saved/'
+        PATH='net_param.pt'
         )
 
 
