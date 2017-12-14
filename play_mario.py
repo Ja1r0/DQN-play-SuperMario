@@ -180,9 +180,9 @@ if __name__=='__main__':
         ACTION_NUM=6,
         REPLAY_MEMORY_CAPACITY=100,
         BATCH_SIZE=10,
-        LOSS_FUNCTION=nn.MSELoss,
-        OPTIM_METHOD=optim.SGD,
-        LEARNING_RATE=1e-6,
+        LOSS_FUNCTION=nn.SmoothL1Loss,
+        OPTIM_METHOD=optim.RMSprop,
+        LEARNING_RATE=0.00025,
         GAMMA=0.99,
         NET_COPY_STEP=10,
         PATH='./model_saved/'
