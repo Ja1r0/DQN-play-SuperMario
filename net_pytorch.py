@@ -87,7 +87,7 @@ class dqn_net(nn.Module):
         output_all=self.forward(obs4_batch)*action_batch
         output=output_all.sum(dim=1) # {Variable contain FloatTensor}
         criterion=loss_func()
-        optimizer=optim_func(self.parameters(),lr=learn_rate,alpha=0.95,eps=0.01)
+        optimizer=optim_func(self.parameters(),lr=learn_rate)
         loss=criterion(output,target)
         #print('loss=\n',loss)
         #print('output=\n',output)
