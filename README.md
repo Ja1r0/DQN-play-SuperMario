@@ -6,7 +6,6 @@ The agent performance is not good enough.Actually there is a gap between my expe
 Anyway,you can just clone this repository and run "play_mario.py"
 ## requirement
 * python3.5
-* [gym](https://github.com/openai/gym.git)
 * [opencv-python](https://stackoverflow.com/questions/23119413/how-do-i-install-python-opencv-through-conda)
 you can install it using conda
  `conda install -c menpo opencv` 
